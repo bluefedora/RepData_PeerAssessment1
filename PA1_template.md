@@ -1,5 +1,5 @@
 # Reproducible Research: Peer Assessment 1
-
+ 
 ## Loading and preprocessing the data
 
 Goals:
@@ -65,7 +65,7 @@ histogram <- function(x, sub, calc=1) {
 ```
 
 Instantiate Imputing function, based on intervals it will use the function 
-specified, median is default
+specified, median is default.
 
 ```r
 # Function to imput missing step data by using specified function on values
