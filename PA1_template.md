@@ -182,7 +182,7 @@ sprintf("........ this is interval: %d", interval)
 ```
 
 The 5 minute interval, which on average across all the days in the dataset, 
-contains the maximum number of steps is: 835
+contains the maximum number of steps is: 835.
 
 ## Imputing missing values
 I wanted to compare using two methods of imputing the missing step numbers, 
