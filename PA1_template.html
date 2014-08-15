@@ -202,6 +202,7 @@ hljs.initHighlightingOnLoad();
 
 <pre><code class="r">library(utils)
 library(stats)
+library(plyr)
 unzip(&quot;activity.zip&quot;)
 activity &lt;- read.csv(&quot;activity.csv&quot;)
 activity$dated &lt;- as.Date(activity$date, &quot;%Y-%m-%d&quot;)
@@ -238,6 +239,7 @@ histogram &lt;- function(x, sub, calc=1) {
     message(sprintf(&quot;Mean total number of steps per day: %f&quot;, means[calc]))
     message(sprintf(&quot;Median of total number of steps per day: %f&quot;, 
                     medians[calc]))
+
     #&gt;&gt;&gt;&gt; see if there&#39;s a clarification in the discussion groups
     # Consider:
     # ag &lt;- aggregate(len ~ ., data = ToothGrowth, mean)
@@ -249,10 +251,18 @@ histogram &lt;- function(x, sub, calc=1) {
 }
 </code></pre>
 
-<p>Instantiate Imputing function, based on intervals it will use the function 
+<p>Instantiate Imputing functions, based on intervals it will use the function 
 specified, median is default.</p>
 
-<pre><code class="r"># Function to imput missing step data by using specified function on values
+<pre><code class="r"># Functions used to impute values for steps
+# Take as input:
+#  x which is the variable to impute
+#  returns the calculated value to use as imputed value
+# used in conjunction with ddply which does the split, calc, and combine
+imputeMean &lt;- function(x) replace(x, is.na(x), mean(x, na.rm=TRUE))
+imputeMedian &lt;- function(x) replace(x, is.na(x), median(x, na.rm=TRUE))
+#
+# Function to imput missing step data by using specified function on values
 #  from the same interval
 # Takes as input:
 #  x which is the data frame containg the activity data
@@ -261,19 +271,12 @@ specified, median is default.</p>
 #  data frame like original but with imputed values for steps where 
 #    steps were NA
 imputByInterval &lt;- function(x, func=&quot;median&quot;) {
-    interval_steps &lt;- with(x, aggregate(steps, list(interval), 
-                                        func, na.rm=TRUE))
-    names(interval_steps) &lt;- c(&quot;interval&quot;, &quot;steps&quot;)
+    if (func==&quot;mean&quot;)
+        y &lt;- ddply(x, ~ interval, transform, steps = imputeMean(steps))
+    else 
+        y &lt;- ddply(x, ~ interval, transform, steps = imputeMedian(steps))  
 
-    activity_imputed &lt;- x
-
-    for(i in 1:nrow(x)) {
-        if (missing_vector[i]) {
-           activity_imputed$steps[i] &lt;- 
-             interval_steps$steps[which(interval_steps$interval==x$interval[i])]
-        }
-    }
-    return(activity_imputed)
+    return(y)
 }
 </code></pre>
 

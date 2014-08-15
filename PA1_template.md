@@ -17,6 +17,7 @@ Process points:
 ```r
 library(utils)
 library(stats)
+library(plyr)
 unzip("activity.zip")
 activity <- read.csv("activity.csv")
 activity$dated <- as.Date(activity$date, "%Y-%m-%d")
@@ -53,6 +54,7 @@ histogram <- function(x, sub, calc=1) {
     message(sprintf("Mean total number of steps per day: %f", means[calc]))
     message(sprintf("Median of total number of steps per day: %f", 
                     medians[calc]))
+    
     #>>>> see if there's a clarification in the discussion groups
     # Consider:
     # ag <- aggregate(len ~ ., data = ToothGrowth, mean)
@@ -64,10 +66,18 @@ histogram <- function(x, sub, calc=1) {
 }
 ```
 
-Instantiate Imputing function, based on intervals it will use the function 
+Instantiate Imputing functions, based on intervals it will use the function 
 specified, median is default.
 
 ```r
+# Functions used to impute values for steps
+# Take as input:
+#  x which is the variable to impute
+#  returns the calculated value to use as imputed value
+# used in conjunction with ddply which does the split, calc, and combine
+imputeMean <- function(x) replace(x, is.na(x), mean(x, na.rm=TRUE))
+imputeMedian <- function(x) replace(x, is.na(x), median(x, na.rm=TRUE))
+#
 # Function to imput missing step data by using specified function on values
 #  from the same interval
 # Takes as input:
@@ -77,19 +87,12 @@ specified, median is default.
 #  data frame like original but with imputed values for steps where 
 #    steps were NA
 imputByInterval <- function(x, func="median") {
-    interval_steps <- with(x, aggregate(steps, list(interval), 
-                                        func, na.rm=TRUE))
-    names(interval_steps) <- c("interval", "steps")
-
-    activity_imputed <- x
-
-    for(i in 1:nrow(x)) {
-        if (missing_vector[i]) {
-           activity_imputed$steps[i] <- 
-             interval_steps$steps[which(interval_steps$interval==x$interval[i])]
-        }
-    }
-    return(activity_imputed)
+    if (func=="mean")
+        y <- ddply(x, ~ interval, transform, steps = imputeMean(steps))
+    else 
+        y <- ddply(x, ~ interval, transform, steps = imputeMedian(steps))  
+    
+    return(y)
 }
 ```
 
