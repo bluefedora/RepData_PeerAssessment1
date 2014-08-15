@@ -27,7 +27,7 @@ missing_vector <- is.na(activity$steps)
 means <- c(0, 0, 0)
 medians <- c(0, 0, 0)
 ```
-Instantiate Histogram, Mean and Median reporting Function
+Instantiate Histogram, Mean and Median reporting Function.
 ```{r histogramFunction}
 # Function to:
 #  Aggregate steps, calculate total number of steps each day

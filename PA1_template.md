@@ -28,7 +28,7 @@ missing_vector <- is.na(activity$steps)
 means <- c(0, 0, 0)
 medians <- c(0, 0, 0)
 ```
-Instantiate Histogram, Mean and Median reporting Function
+Instantiate Histogram, Mean and Median reporting Function.
 
 ```r
 # Function to:
