@@ -19,7 +19,7 @@ minute intervals each day.
 The data were provided by R.D. Peng, PhD at
 http://github.com/rdpeng/RepData_PeerAssessment1. 
 
-The variables in the dataset are:
+The variables in the data set are:
 * interval: Identifier for the 5-minute interval in which the measurement was 
 taken in the day.  Presumably starting at midnight, 12:05 would end the first 
 interval.  There are 288 5-minute intervals in the day. The interval numbers are
@@ -45,7 +45,8 @@ Process points:
 * Convert date strings to an additional date-type variable
 * Calculate missing step values vector
 * Setup vectors to use to compare means and medians later
-* Instatiate functions
+* Instantiate functions
+
 ```{r loadAndPreprocess}
 library(utils)
 library(stats)
@@ -78,9 +79,8 @@ Instantiate histogram, mean and median reporting function.
 
 histogram <- function(x, sub, calc=1) {
     #find the total number of steps per day, store in sums
-    sums <- with(x, aggregate(steps, list(dated), sum, na.rm=TRUE))
+    sums <- with(x, aggregate(steps, list(date), sum, na.rm=TRUE))
     names(sums) <- c("Date", "TotalSteps")
-
     means[calc] <<- mean(sums$TotalSteps, na.rm=TRUE)
     medians[calc] <<- median(sums$TotalSteps, na.rm=TRUE)
     barplot(sums$TotalSteps, main="Total Number of Steps per Day", 
@@ -127,6 +127,7 @@ imputeByInterval <- function(x, func="median") {
 ``` 
 
 ## What is mean total number of steps taken per day?
+
 Goals:
 
 1. Make a histogram of the total number of steps taken each day
@@ -153,16 +154,16 @@ Goals:
 
 1. Make a time series plot of the 5-minute interval (x-axis) and the average
 number of steps taken, averaged across all days (y-axis)
-1. Which 5-minute interval, on average across all the days in the dataset, 
+1. Which 5-minute interval, on average across all the days in the data set, 
 contains the maximum number of steps?
 
 Process points:
-* Calculate the average number of steps per interval and store in dataset
+* Calculate the average number of steps per interval and store in data set
 'intervals'
-* Line plot the result x, y (intervals, steps).  See note about picking the x 
-axis variable
+* Line plot the result x, y (intervals, steps).
 * Determine which interval has the maximum average steps
 * Report both the interval index and value
+
 ```{r avgDailyPattern}
 intervals <- ddply(activity, ~ interval, summarize, 
                    AverageSteps=mean(steps, na.rm=TRUE))  
@@ -170,14 +171,14 @@ plot(intervals$interval, intervals$AverageSteps,
      main="Average Daily Activity Pattern", type="l")
 ```
 
-Find the interval contatining, on the average, the maximum number of steps:
+Find the interval containing, on the average, the maximum number of steps:
 
 ```{r maxmiumStepsInterval}
 max_interval_index <- which(intervals$AverageSteps==max(intervals$AverageSteps))
 interval <- intervals$interval[max_interval_index]
 ```
 
-The 5 minute interval, which on average across all the days in the dataset, 
+The 5 minute interval, which on average across all the days in the data set, 
 contains the maximum number of steps is interval #: `r interval`.
 
 ## Imputing missing values
@@ -186,9 +187,9 @@ mean/interval and median/interval.  Both are listed here.
 
 Goals:
 
-1. Calculate and report the total number of missing values in the dataset
-1. Devise a strategy for filling in all the missing values in the dataset
-1. Create a new dataset that is equal to the original dataset but with missing
+1. Calculate and report the total number of missing values in the data set
+1. Devise a strategy for filling in all the missing values in the data set
+1. Create a new data set that is equal to the original data set but with missing
 data filled in
 1. Make a histogram of the total number of steps taken each day and calculate 
 and report the mean and median total number of steps taken per day.  Do these 
@@ -202,8 +203,8 @@ Processing points:
 * Calculate the number of missing values. 
 * We will calculate the mean and median values across all the days for the 5 
 minute intervals and will use those values in place of the missing step values; 
-the new dataset is 'activity_imputed'. 
-* Compare overall mean and median values of the resulting imputed datasets.
+the new data set is 'activity_imputed'. 
+* Compare overall mean and median values of the resulting imputed data sets.
 * We'll then compare the results of imputing both ways by comparing the 
 plotting of the histogram (compare step totals between the two imputing models
 and the original histogram)
@@ -212,7 +213,7 @@ and the original histogram)
 missing <- sum(missing_vector)
 ```
 
-There are `r missing` missing step values in the orginal data set.
+There are `r missing` missing step values in the original data set.
 
 **_First_** impute using the mean per interval:
 
@@ -275,7 +276,7 @@ Will use the last imputed data (using the interval medians to impute)
 
 Goals:
 
-1. Create a new factor variable in the dataset with two levels -- "weekday" 
+1. Create a new factor variable in the data set with two levels -- "weekday" 
 and "weekend" indicating whether a given date is a weekday or weekend day.
 1. Make a panel plot containing time series plots of the 5-minute interval
 (x-axis) and the average number of steps taken, averaged across all weekday days
@@ -305,6 +306,7 @@ at the end of day
 * However, in the morning, the daily weekend activity is delayed
 * The weekend activity is greater during the day than it is during the day on
 weekdays
-* Both patterns exihibit a higher level of activity in the morning at about
-interval 835
+* Both patterns exhibit a higher level of activity in the morning at about the
+same time
+
 
